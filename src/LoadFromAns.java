@@ -7,7 +7,7 @@ import java.util.List;
 
 public class LoadFromAns {
 
-    public static final String DirPath = "C:\\Users\\pake.yc\\Desktop\\ans", FileName = "MethodPermissions.txt";
+    public static final String DirPath = "C:\\Users\\pake.yc\\Desktop\\ans", FileName = "ClassePermissions.txt";
 
     public static List<AnsBean> getAnsList() {
         List<AnsBean> contentList = new LinkedList<>();

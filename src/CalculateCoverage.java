@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class testMain {
+public class CalculateCoverage {
 
     public static String key = "returnType=", nextKey = "^static=";
 
