@@ -70,10 +70,11 @@ public class Main {
                             DexAopJavaString += oneJavaCode + "\n";
                         }
                         finalMethodString += "\t" + ansBean + "\n";
-                    } else if (_nameFromAns.contains("equestPermission")) {
-                        String oneConfig = ConfigFileGenerator.generateCode(ansBean);
-                        DexAopReqPerString += oneConfig + "\n";
                     }
+//                    else if (_nameFromAns.contains("equestPermission")) {
+//                        String oneConfig = ConfigFileGenerator.generateCode(ansBean);
+//                        DexAopReqPerString += oneConfig + "\n";
+//                    }
                 }
                 if (!found) {
                     //System.err.println("Not Found Name = " + nameFromJson);
@@ -99,7 +100,7 @@ public class Main {
         }
         System.out.println("write File...");
         try {
-            FileUtils.writeStringToFile(new File(DirPath, PermissionDexAopFileName), DexAopReqPerString, "utf-8");
+//            FileUtils.writeStringToFile(new File(DirPath, PermissionDexAopFileName), DexAopReqPerString, "utf-8");
             FileUtils.writeStringToFile(new File(DirPath, SuccessFileName), finalMethodString, "utf-8");
             FileUtils.writeStringToFile(new File(DirPath, FailFileName), notFoundString, "utf-8");
             FileUtils.writeStringToFile(new File(DirPath, ConfigFileName), DexAopString, "utf-8");
