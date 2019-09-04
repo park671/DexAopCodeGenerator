@@ -4,15 +4,32 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class MethodAopGenerator {
 
+    public static final String DirPath = "C:\\Users\\pake.yc\\Desktop\\隐私管控v2", SimpleName = "SimpleClazzName.txt", FullName = "FullClazzName.txt";
+
+    static Map<String, String> simpleToFull = new HashMap<>();
+
+    public static void initMap() throws FileNotFoundException {
+        Scanner simpleReader = new Scanner(new FileInputStream(new File(DirPath, SimpleName)));
+        Scanner fullReader = new Scanner(new FileInputStream(new File(DirPath, FullName)));
+        while (simpleReader.hasNext() && fullReader.hasNext()) {
+            simpleToFull.put(simpleReader.nextLine(), fullReader.nextLine());
+        }
+    }
+
     public static void main(String[] args) {
 
+        try {
+            initMap();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         StringBuilder finalConfig = new StringBuilder();
+        Set<String> mapNotFound = new HashSet<>();
         Set<String> proxyName = new HashSet<>();
 
         Scanner reader = null;
@@ -40,7 +57,7 @@ public class MethodAopGenerator {
 
         /**
          * 0 - return value
-         * 1 - name
+         * 1 - method name
          * 2 - start args
          * 3 - end
          */
@@ -76,6 +93,24 @@ public class MethodAopGenerator {
                 } else {
                     switch (status) {
                         case 0:
+                            if (!item.isEmpty()) {
+                                if (item.contains("...")) {
+                                    item = item.replace("...", "[]");
+                                }
+                                boolean isArray = false;
+                                if (item.contains("[]")) {
+                                    item = item.replace("[]", "");
+                                    isArray = true;
+                                }
+                                if (simpleToFull.get(item) != null && !simpleToFull.get(item).isEmpty()) {
+                                    item = simpleToFull.get(item);
+                                    if (isArray) {
+                                        item += "[]";
+                                    }
+                                } else {
+                                    mapNotFound.add(item);
+                                }
+                            }
                             bean.setReturnType(item);
                             status++;
                             break;
@@ -98,6 +133,24 @@ public class MethodAopGenerator {
                                 } else {
                                     firstArg = false;
                                 }
+                                if (!item.isEmpty()) {
+                                    if (item.contains("...")) {
+                                        item = item.replace("...", "[]");
+                                    }
+                                    boolean isArray = false;
+                                    if (item.contains("[]")) {
+                                        item = item.replace("[]", "");
+                                        isArray = true;
+                                    }
+                                    if (simpleToFull.get(item) != null && !simpleToFull.get(item).isEmpty()) {
+                                        item = simpleToFull.get(item);
+                                        if (isArray) {
+                                            item += "[]";
+                                        }
+                                    } else {
+                                        mapNotFound.add(item);
+                                    }
+                                }
                                 arg.append(item);
                             }
                             isArgType = !isArgType;
@@ -119,11 +172,16 @@ public class MethodAopGenerator {
         }//While
         try {
             StringBuilder config = new StringBuilder();
-            for(String item : proxyName){
+            StringBuilder mapNotFoundStringBuilder = new StringBuilder();
+            for (String item : mapNotFound) {
+                mapNotFoundStringBuilder.append(item).append("\n");
+            }
+            for (String item : proxyName) {
                 config.append("\"").append(item).append("\",\n");
             }
             FileUtils.writeStringToFile(new File("C:\\Users\\pake.yc\\Desktop\\隐私管控v2", "generator.java"), config.toString(), "utf-8");
             FileUtils.writeStringToFile(new File("C:\\Users\\pake.yc\\Desktop\\隐私管控v2", "h5js_thirdpart.cfg"), finalConfig.toString(), "utf-8");
+            FileUtils.writeStringToFile(new File(DirPath, "notFound.txt"), mapNotFoundStringBuilder.toString(), "utf-8");
         } catch (IOException e) {
             e.printStackTrace();
         }
