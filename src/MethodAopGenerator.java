@@ -81,6 +81,7 @@ public class MethodAopGenerator {
             boolean isArgType = true;
             boolean complete = false;
             boolean firstArg = true;
+            boolean isPrivate = false;
 
             for (String item : parts) {
                 item = item.trim();
@@ -89,6 +90,8 @@ public class MethodAopGenerator {
                 if (keyword.contains(item)) {
                     if (item.equals("static")) {
                         bean.setStatic(true);
+                    }else if(item.equals("private")){
+                        isPrivate = true;
                     }
                 } else {
                     switch (status) {
@@ -166,6 +169,9 @@ public class MethodAopGenerator {
             }
             String itemConfig = ConfigFileGenerator.generateCode(bean);
             System.out.println(itemConfig);
+            if(isPrivate){
+                itemConfig += "^reflectOrigin=true";
+            }
             finalConfig.append(itemConfig).append("\n");
             String stub = "proxyMethod=";
             proxyName.add(itemConfig.substring(itemConfig.indexOf(stub) + stub.length()));
